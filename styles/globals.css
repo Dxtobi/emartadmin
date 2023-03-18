@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body{
+    background: #f1f5f9;
+}
+
+.box-shadow {
+    box-shadow: 0px 10px 20px -5px #46e6ff2f;
+}
+
+.brand{
+ font-weight: bolder;
+}
+
+.hero-text {
+    font-size: 35px;
+}
+
+.header_div {
+    
+    backdrop-filter: blur(13px);
+}
+
+.border-custom{
+   
+        border: 3px solid #581c87;
+    }
