@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { getSession } from "next-auth/react";
 import { PrismaClient } from "@prisma/client";
+import client from "../lib/prismadb";
 
 interface tags {
     id: string,
@@ -107,7 +108,7 @@ export default function NewProduct(params: { tags: Array<tags>; }) {
 }
 
 export async function getServerSideProps(context: any) {
-    const prisma = new PrismaClient();
+    const prisma = client;
     const session = await getSession(context);
     if (!session) {
       return {

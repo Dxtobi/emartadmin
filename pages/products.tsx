@@ -6,6 +6,7 @@ import { getSession } from "next-auth/react";
 import axios, { AxiosRequestConfig } from "axios";
 import router from "next/router";
 import { useState } from "react";
+import client from "../lib/prismadb";
 
 
 export default function Products(props: {products: any}) {
@@ -59,7 +60,7 @@ export default function Products(props: {products: any}) {
 }
 
 export async function getServerSideProps(context: any) {
-    const prisma = new PrismaClient();
+    const prisma = client
     
     const products = await prisma.product.findMany();
     console.log('products', products);

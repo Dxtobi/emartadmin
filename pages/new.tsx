@@ -4,8 +4,9 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router"
 import Image from "next/image";
 import { useState } from "react";
-import { PrismaClient } from "@prisma/client";
+import ImageUploadForm from './ImageUpload'
 import { getSession } from "next-auth/react";
+import client from "../lib/prismadb";
 
 
 interface Value {
@@ -29,14 +30,17 @@ export default function NewProduct(params:{tags: Array<thisTags>}) {
     const { tags } = params
     
     const { register, handleSubmit } = useForm();
-    const [image, setImage] = useState('')
+   
     const [tag, setTags] = useState(tags)
     const [add_tag, setAdd_Tags] = useState(Array<string>)
     const [images, setImages] = useState(Array<string>)
+    const [loading, setLoading] = useState(false)
     
     
     const onSubmitForm = async (values: any) => {
+        setLoading(true)
         if (images.length < 1) {
+            setLoading(false)
             return
         }
         try {
@@ -59,20 +63,12 @@ export default function NewProduct(params:{tags: Array<thisTags>}) {
                 router.reload()
             }
         } catch (error) {
+            setLoading(false)
             console.log(error)
         }
     }
 
-    const onImageChanged = (e:any) => {
-        //console.log();
-        e.preventDefault()
-        if (image === '') {
-            return
-        }
-        const newImg = [...images, image]
-        setImages(newImg)
-        setImage('')
-    }
+  
 
     function addToTags(tag_name: string): void {
         const t = [...add_tag, tag_name]
@@ -90,10 +86,10 @@ export default function NewProduct(params:{tags: Array<thisTags>}) {
         <div className="w-full  h-full bg-white">
             <div className="w-full p-2">
                 <form onSubmit={handleSubmit(onSubmitForm)}>
-                    <input className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3" type='text'  {...register('product_name', { required: true })} placeholder="Product name" />
-                    <input className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3" type='number'  {...register('product_price', { required: true })} placeholder="price" />
-                    <textarea className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3 min-h-[200px]"   {...register('product_description')} placeholder="full description of product" />
-                    <input className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3" type='text'  {...register('seller_contact', { required: true })} placeholder="seller contact" />
+                    <input className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3" type='text'  {...register('product_name', { required: true })} placeholder="Product name" required/>
+                    <input className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3" type='number'  {...register('product_price', { required: true })} placeholder="price" required/>
+                    <textarea className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3 min-h-[200px]"   {...register('product_description')} placeholder="full description of product" required/>
+                    <input className="p-3 bg-gray-100 rounded-md w-full outline-none mb-3" type='text'  {...register('seller_contact', { required: true })} placeholder="seller contact" required/>
                    {
                     //<input className="p-3 bg-gray-100 rounded-md w-full outline-none mb-4" type='text'  {...register('slug')} placeholder="Foot wears, shorts trousers, others" /> 
                     }
@@ -111,7 +107,8 @@ export default function NewProduct(params:{tags: Array<thisTags>}) {
                         ))
                     }
                    </div>
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
+                        
                         <input type='string' value={image} className="p-3 bg-gray-300 rounded-md w-full outline-none mb-2" onChange={(e)=>setImage(e.target.value)} placeholder='image uri' />
                         <button className="p-3 bg-gray-600 text-white rounded-md w-full outline-none mb-2" onClick={onImageChanged}>Add Image</button>
                         <div className=" flex gap-2 items-center flex-wrap">
@@ -123,8 +120,11 @@ export default function NewProduct(params:{tags: Array<thisTags>}) {
                         </div>
 
                         
-                    </div>
-                    <button className="p-3 bg-gray-900 text-white rounded-md w-full outline-none mb-2" type="submit">Add</button>
+                      </div> 
+                        */}
+                    <ImageUploadForm images={images} setFiles={setImages } />
+            
+                    <button className="p-3 bg-gray-900 text-white rounded-md w-full outline-none mb-2" type="submit" disabled={loading}>{loading?'Loading..':'Add'}</button>
                 </form>
             </div>
             
@@ -133,7 +133,7 @@ export default function NewProduct(params:{tags: Array<thisTags>}) {
 }
 
 export async function getServerSideProps(context: any) {
-    const prisma = new PrismaClient();
+    const prisma = client
     const session = await getSession(context);
     if (!session) {
       return {

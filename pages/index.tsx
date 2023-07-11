@@ -15,6 +15,7 @@ import { data } from '../lib/fakeData';
 import HomeContainer from '../components/home/Index';
 
 import { useState } from 'react';
+import client from '../lib/prismadb';
 
 
 const Home = (params: { session: any; product: any; users: any; orders: any; pending: any;  }) => {
@@ -50,14 +51,7 @@ const Home = (params: { session: any; product: any; users: any; orders: any; pen
           </div>
         </>
       )}
-      {!session  && (
-        <>
-          <button onClick={()=>signIn('google')} className=' bg-gray-800 text-white w-full p-3 my-6 rounded-xl '>
-            Login
-          </button>
-          
-        </>
-      )}
+
     </div>
   )
 }
@@ -65,21 +59,16 @@ const Home = (params: { session: any; product: any; users: any; orders: any; pen
 
 
 export async function getServerSideProps(context: any) {
-  const prisma = new PrismaClient();
+try {
+  const prisma = client;
   const session = await getSession(context);
-  if (!session) {
-    return {
-      props: {
-        session: null
-      }, 
-    }
-  }
 
  
   const sessionUser = session?.user as User;
-  const product = await prisma.product.count();
+ 
   const users = await prisma.user.count();
   const orders = await prisma.order.count({ where: { status: 'delivered' } });
+  const product = await prisma.product.count();
   const pending = await prisma.order.count({ where: { status: 'pending' } });
   const tags = await prisma.tag.count();
   //console.log(session, profile);
@@ -94,5 +83,8 @@ export async function getServerSideProps(context: any) {
       tags
     },
   }
+} catch (error) {
+  console.log(error?.message)
+}
 }
 export default Home
