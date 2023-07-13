@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Image } from 'cloudinary-react';
 import axios from 'axios';
- const ImageUploadForm = ({setFiles, images}) => {
+type props = {
+  setFiles: any,
+  images:Array<string>
+}
+ const ImageUploadForm = ({setFiles, images}:props) => {
    
   
-    const handleImageUpload = async (e) => {
+    const handleImageUpload = async (e: { target: { files: Iterable<unknown> | ArrayLike<unknown>; }; }) => {
       const files = Array.from(e.target.files);
   
       const formDataArray = files.map((file) => {
@@ -15,7 +19,7 @@ import axios from 'axios';
         return formData;
       });
   
-      const uploadedImages = [];
+      const uploadedImages: any[] = [];
   
       try {
         const uploadResponses = await Promise.all(
