@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Image } from 'cloudinary-react';
 import axios from 'axios';
 type props = {
   setFiles: any,
@@ -52,9 +51,8 @@ type props = {
   
         <div className="flex gap-2 items-center flex-wrap">
           {images.map((imageUrl, index) => (
-            <Image
+            <img
               key={index}
-              cloudName="your_cloudinary_cloud_name"
               publicId={imageUrl}
               width="60"
               height="60"
