@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router"
 import Image from "next/image";
 import { useState } from "react";
-import ImageUploadForm from './ImageUpload'
+import ImageUploadForm from '../components/ImageUpload'
 import { getSession } from "next-auth/react";
 import client from "../lib/prismadb";
 
